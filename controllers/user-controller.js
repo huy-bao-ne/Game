@@ -16,6 +16,7 @@ const loginOrRegister = async (req, res) => {
     const existingUser = await UserService.findUserByUsername(username);
 
     if (existingUser) {
+      // User exists, check password
       if (existingUser.password === password) {
         return res.json({
           message: "Login success",
@@ -26,6 +27,7 @@ const loginOrRegister = async (req, res) => {
       }
     }
 
+    // User does not exist, create a new user
     const newUser = await UserService.createUser(username, password);
     return res.json({
       message: "User created",

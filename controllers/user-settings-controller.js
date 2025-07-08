@@ -13,7 +13,7 @@ const getSettings = async (req, res) => {
     //console.log("📦 settings found:", settings);
     res.json(settings);
   } catch (err) {
-    console.error("❌ Lỗi getSettings:", err);
+    //console.error("❌ Lỗi getSettings:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -28,7 +28,7 @@ const updateSettings = async (req, res) => {
     );
     res.json({ message: "Settings updated", settings });
   } catch (err) {
-    console.error("❌ Lỗi updateSettings:", err);
+    //console.error("❌ Lỗi updateSettings:", err);
     res.status(500).json({ message: "Server error" });
   }
 };

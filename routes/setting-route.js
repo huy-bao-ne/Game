@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const settingsController = require("../controllers/user-settings-controller");
 
-// GET /api/user/settings?user_id=1
+// GET /api/user/settings?user_id=...
 router.get("/", settingsController.getSettings);
 
 // PUT /api/user/settings

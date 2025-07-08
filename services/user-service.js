@@ -10,7 +10,7 @@ const findUserByUsername = async (username) => {
   const [rows] = await conn.query("SELECT * FROM users WHERE username = ?", [
     username,
   ]);
-  return rows[0] || null;
+  //return rows[0] || null;
 };
 
 const createUser = async (username, password) => {
@@ -24,7 +24,7 @@ const createUser = async (username, password) => {
     "INSERT INTO users (username, password) VALUES (?, ?)",
     [username, password]
   );
-  return { id: result.insertId, username };
+  //return { id: result.insertId, username };
 };
 
 module.exports = {
