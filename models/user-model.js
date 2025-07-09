@@ -12,9 +12,9 @@ const createUserTable = async () => {
   try {
     const connection = await getConnection();
     await connection.query(sql);
-    // console.log("✅ Bảng 'user' đã sẵn sàng!");
+    // console.log("");
   } catch (err) {
-    // console.error("❌ Lỗi tạo bảng 'user':", err);
+    // console.error("", err);
   }
 };
 

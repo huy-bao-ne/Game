@@ -13,7 +13,7 @@ const getConnection = async () => {
   if (!connection) {
     throw new Error("Failed to connect to the database");
   }
-  console.log("✅ MySQL connected!");
+  //console.log("✅ MySQL connected!");
   return connection;
 };
 

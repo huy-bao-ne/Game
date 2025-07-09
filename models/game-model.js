@@ -13,9 +13,9 @@ const createGameStateTable = async () => {
   try {
     const conn = await getConnection(); // 🟢 Lấy connection từ hàm
     await conn.query(sql);
-    //console.log("✅ Bảng 'game' đã sẵn sàng!");
+    //console.log(");
   } catch (err) {
-    //console.error("❌ Lỗi tạo bảng 'game':", err);
+    //console.error("", err);
   }
 };
 

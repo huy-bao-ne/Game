@@ -1,6 +1,4 @@
 const getConnection = require("../config/database");
-//Nhớ kiểm tra các trường và cột xem trong bảng `user_settings` đã được tạo trong cơ sở dữ liệu hay chưa.
-//Có đúng tên hay không
 
 const getUserSettings = async (userId) => {
   const conn = await getConnection();

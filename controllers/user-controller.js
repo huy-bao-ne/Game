@@ -5,7 +5,6 @@ const UserService = require("../services/user-service.js");
 // If the user exists, it checks the password and logs them in
 // If the user does not exist, it creates a new user account
 const loginOrRegister = async (req, res) => {
-  //const { username, password } = req.body
   const username = req.body.username;
   const password = req.body.password;
 
@@ -34,7 +33,7 @@ const loginOrRegister = async (req, res) => {
       user: newUser,
     });
   } catch (err) {
-    console.error(err);
+    //console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 };
