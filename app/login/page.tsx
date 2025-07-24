@@ -12,12 +12,24 @@ export default function LoginPage() {// Trang dang nhap
   const router = useRouter()
   const [inputName, setInputName] = useState("")
   const [inputPassword, setInputPassword] = useState("")
+  const [isLoggingIn, setIsLoggingIn] = useState(false)
+  const [loginSuccess, setLoginSuccess] = useState(false)
   const { login } = useAuth()
 
-  const handleLogin = () => {// xu ly dang nhap
+  const handleLogin = async () => {// xu ly dang nhap
     if (inputName.trim()) {
-      login(inputName.trim())
-      router.push('/') 
+      setIsLoggingIn(true)
+      
+      // Simulate loading time
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      login(inputName.trim(), inputPassword)
+      setLoginSuccess(true)
+      
+      // Show success message then redirect
+      setTimeout(() => {
+        router.push('/') 
+      }, 1500)
     }
   }
 
@@ -55,45 +67,80 @@ export default function LoginPage() {// Trang dang nhap
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="relative w-[340px] p-8 border-4 border-black bg-[#222b3a] shadow-2xl flex flex-col gap-6 items-center"
-          style={{ fontFamily: "'Press Start 2P', monospace" }}
+          className="relative w-[380px] p-8 border-4 border-black bg-gradient-to-b from-gray-900 to-black shadow-2xl flex flex-col gap-6 items-center rounded-lg"
+          style={{ 
+            fontFamily: "'Press Start 2P', monospace",
+            boxShadow: "0 0 20px rgba(255, 255, 0, 0.3)"
+          }}
         >
-          <div className="text-2xl font-bold text-yellow-300 mb-2 tracking-wider">LOGIN</div>
-          
-          <label className="text-white text-sm w-full text-left mb-1">User Name</label>
-          <input
-            className="w-full px-3 py-2 border-2 border-black bg-[#111] text-yellow-200 text-lg outline-none focus:border-yellow-400 transition"
-            value={inputName}
-            onChange={e => setInputName(e.target.value)}
-            autoFocus
-            placeholder="your name"
-            maxLength={30}
-            onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-          />
-          
-          <label className="text-white text-sm w-full text-left mb-1 mt-2">Password</label>
-          <input
-            className="w-full px-3 py-2 border-2 border-black bg-[#111] text-yellow-200 text-lg outline-none focus:border-yellow-400 transition"
-            type="password"
-            value={inputPassword}
-            onChange={e => setInputPassword(e.target.value)}
-            placeholder="your password"
-            maxLength={30}
-            onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-          />
-          
-          <button
-            className="w-full py-3 mt-2 bg-blue-400 text-white font-bold border-4 border-black hover:brightness-110 transition-all text-lg"
-            onClick={handleLogin}
-          >
-            Login
-          </button>
+          {loginSuccess ? (
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="text-center"
+            >
+              <div className="text-3xl mb-4">✅</div>
+              <div className="text-xl font-bold text-green-400 mb-2 tracking-wider">SUCCESS!</div>
+              <div className="text-sm text-gray-300">Redirecting...</div>
+            </motion.div>
+          ) : (
+            <>
+              <div className="text-2xl font-bold text-yellow-300 mb-2 tracking-wider">LOGIN</div>
+              
+              <div className="w-full">
+                <label className="text-white text-sm w-full text-left mb-2 block">User Name</label>
+                <input
+                  className="w-full px-4 py-3 border-2 border-gray-600 bg-gray-800 text-yellow-200 text-base outline-none focus:border-yellow-400 focus:bg-gray-700 transition-all rounded"
+                  value={inputName}
+                  onChange={e => setInputName(e.target.value)}
+                  autoFocus
+                  placeholder="Enter your name"
+                  maxLength={20}
+                  disabled={isLoggingIn}
+                  onKeyPress={(e) => e.key === 'Enter' && !isLoggingIn && handleLogin()}
+                />
+              </div>
+              
+              <div className="w-full">
+                <label className="text-white text-sm w-full text-left mb-2 block">Password</label>
+                <input
+                  className="w-full px-4 py-3 border-2 border-gray-600 bg-gray-800 text-yellow-200 text-base outline-none focus:border-yellow-400 focus:bg-gray-700 transition-all rounded"
+                  type="password"
+                  value={inputPassword}
+                  onChange={e => setInputPassword(e.target.value)}
+                  placeholder="Enter password (optional)"
+                  maxLength={30}
+                  disabled={isLoggingIn}
+                  onKeyPress={(e) => e.key === 'Enter' && !isLoggingIn && handleLogin()}
+                />
+              </div>
+              
+              <motion.button
+                className="w-full py-4 mt-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white font-bold border-4 border-black transition-all text-base rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleLogin}
+                disabled={isLoggingIn || !inputName.trim()}
+                whileHover={!isLoggingIn ? { scale: 1.02 } : {}}
+                whileTap={!isLoggingIn ? { scale: 0.98 } : {}}
+              >
+                {isLoggingIn ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Logging in...
+                  </div>
+                ) : (
+                  "LOGIN"
+                )}
+              </motion.button>
+            </>
+          )}
         </motion.div>
 
         {/* Back button */}
-        <div className="mt-8">
-          <TetorisButton onClick={backToHome} label="BACK TO MENU" color="purple" />
-        </div>
+        {!isLoggingIn && !loginSuccess && (
+          <div className="mt-8">
+            <TetorisButton onClick={backToHome} label="BACK TO MENU" color="purple" />
+          </div>
+        )}
       </div>
     </div>
   )

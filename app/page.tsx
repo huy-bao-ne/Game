@@ -11,7 +11,7 @@ import { useAuth } from "@/lib/hooks/useAuth"
 export default function Home() {
   const router = useRouter()
   const [showMenu, setShowMenu] = useState(false)
-  const { user, logout } = useAuth()
+  const { user, logout, isLoading } = useAuth()
 
   // Hiển thị menu sau 1 giây
   useEffect(() => {
@@ -28,6 +28,10 @@ export default function Home() {
     router.push('/settings')
   }
 
+  const openLeaderboard = () => {
+    router.push('/leaderboard')
+  }
+
   const quitGame = () => {
     window.close()
     setTimeout(() => {
@@ -42,26 +46,49 @@ export default function Home() {
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black">
       {/* Login section */}
-      {showMenu && (
+      {showMenu && !isLoading && (
         <div className="absolute top-6 right-6 z-50">
           {user ? (
-            <div className="flex items-center gap-2 bg-black/70 px-3 py-1 rounded">
-              <span className="text-yellow-300 font-bold" style={{ fontFamily: "'Press Start 2P', monospace" }}>
-                Xin chào, {user.name}
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center gap-3 bg-black/80 px-4 py-2 rounded-lg border-2 border-yellow-300"
+            >
+              <span className="text-yellow-300 font-bold text-sm" style={{ fontFamily: "'Press Start 2P', monospace" }}>
+                👋 {user.name}
               </span>
-              <button onClick={logout} className="text-red-400 underline ml-2" style={{ fontFamily: "'Press Start 2P', monospace" }}>
+              <button 
+                onClick={logout} 
+                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded border-2 border-black transition-all text-xs"
+                style={{ fontFamily: "'Press Start 2P', monospace" }}
+              >
                 LOGOUT
               </button>
-            </div>
+            </motion.div>
           ) : (
-            <button
+            <motion.button
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
               onClick={openLogin}
-              className="bg-yellow-300 border-2 border-black px-3 py-1 font-bold text-sm"
+              className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-300 hover:to-yellow-400 border-3 border-black px-4 py-2 font-bold text-sm transition-all rounded-lg shadow-lg"
               style={{ fontFamily: "'Press Start 2P', monospace" }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              LOGIN
-            </button>
+              🔑 LOGIN
+            </motion.button>
           )}
+        </div>
+      )}
+
+      {/* Loading state */}
+      {isLoading && (
+        <div className="absolute top-6 right-6 z-50">
+          <div className="bg-black/80 px-4 py-2 rounded-lg border-2 border-gray-600">
+            <span className="text-gray-400 text-xs" style={{ fontFamily: "'Press Start 2P', monospace" }}>
+              Loading...
+            </span>
+          </div>
         </div>
       )}
 
@@ -95,6 +122,7 @@ export default function Home() {
             </motion.div>
             <div className="flex flex-col space-y-6 items-center">
               <TetorisButton onClick={startGame} label="PLAY" color="blue" />
+              <TetorisButton onClick={openLeaderboard} label="RANKING" color="green" />
               <TetorisButton onClick={openSettings} label="SETTINGS" color="pink" />
               <TetorisButton onClick={quitGame} label="QUIT" color="purple" />
             </div>

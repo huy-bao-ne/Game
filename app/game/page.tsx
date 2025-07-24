@@ -1,43 +1,50 @@
 "use client"
 
-import { useCallback } from "react"
 import { useRouter } from "next/navigation"
+import { motion } from "framer-motion"
 import TetrisGame from "@/components/tetris-game"
 import { useAuth } from "@/lib/hooks/useAuth"
 
 export default function GamePage() {
-  const router = useRouter()// dieu huong
-  const { user } = useAuth()// su ly va lay thong tin
+  const router = useRouter() // dieu huong
+  const { user, isLoading } = useAuth() // xu ly va lay thong tin nguoi dung
 
-  // xu ly khi game ket thuc
-  const handleGameOver = useCallback((score: number) => {
-    // gui diem so cao toi server
-  }, [])
-
-  const returnToMenu = () => {// quay ve trang chu
+  const returnToMenu = () => { // quay ve trang chu
     router.push('/')
   }
 
-  //choi game khong co user
+  const goToLeaderboard = () => { // chuyen den bang xep hang
+    router.push('/leaderboard')
+  }
+
+  const goToLogin = () => { // chuyen den trang dang nhap
+    router.push('/login')
+  }
+
+  // choi game khong co user dang nhap
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black">
-      {/*hien thi dang nhap */}
-      {user && (
+      {/* hien thi thong tin dang nhap */}
+      {user && !isLoading && (
         <div className="absolute top-6 right-6 z-50">
-          <div className="flex items-center gap-2 bg-black/70 px-3 py-1 rounded">
-            <span className="text-yellow-300 font-bold" style={{ fontFamily: "'Press Start 2P', monospace" }}>
-              Xin chào, {user.name}
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-2 bg-black/80 px-3 py-2 rounded-lg border-2 border-yellow-300"
+          >
+            <span className="text-yellow-300 font-bold text-sm" style={{ fontFamily: "'Press Start 2P', monospace" }}>
+              🎮 {user.name}
             </span>
-          </div>
+          </motion.div>
         </div>
       )}
 
-      {/* Background */}
+      {/* background */}
       <div className="absolute inset-0 bg-grid opacity-5 pointer-events-none"></div>
 
-      {/* Game */}
-      <TetrisGame onReturn={returnToMenu} onGameOver={handleGameOver} />
+      {/* game */}
+      <TetrisGame onReturn={returnToMenu} onLeaderboard={goToLeaderboard} onLogin={goToLogin} />
     </div>
   )
 }

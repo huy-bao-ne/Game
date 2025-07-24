@@ -5,7 +5,7 @@ import { motion } from "framer-motion"
 interface TetorisButtonProps {
   label: string
   onClick: () => void
-  color: "blue" | "pink" | "purple" | "yellow" // gioi han 4 mau
+  color: "blue" | "pink" | "purple" | "yellow" | "green" // gioi han 5 mau
 }
 
 // hieu ung 3D cho nut 
@@ -15,6 +15,7 @@ export default function TetorisButton({ label, onClick, color }: TetorisButtonPr
     pink:    { bg: "bg-pink-500",    shadow: "shadow-pink-700",    highlight: "bg-pink-400",    text: "text-white" },
     purple:  { bg: "bg-purple-500",  shadow: "shadow-purple-700",  highlight: "bg-purple-400",  text: "text-white" },
     yellow:  { bg: "bg-yellow-400",  shadow: "shadow-yellow-600",  highlight: "bg-yellow-300",  text: "text-gray-800" },
+    green:   { bg: "bg-green-500",   shadow: "shadow-green-700",   highlight: "bg-green-400",   text: "text-white" },
   }
   const scheme = colorSchemes[color] // lay mau sac tuong ung 
 

@@ -7,7 +7,7 @@ import KeyGuide from "./key-guide"
 const BOARD_WIDTH = 10 // 10 cot
 const BOARD_HEIGHT = 20 // 20 hang
 const BLOCK_SIZE = 30
-const LEVEL_SPEED = [800, 650, 500, 400, 300, 250, 200, 150, 100, 80, 50] // toc do roi theo level
+const LEVEL_SPEED = [800, 650, 500, 400, 300, 250, 200, 150, 100, 80, 50] // toc do roi theo muc do
 const LINE_CLEAR_SOUND_URL = "/sounds/collect point.mp3"
 
 const TETRIMINO_KEYS = ['I', 'O', 'T', 'J', 'L', 'S', 'Z'] as const // danh sach cac khoi
@@ -44,10 +44,12 @@ const initialPosition = { x: Math.floor(BOARD_WIDTH / 2) - 2, y: 0 }
 
 type TetrisGameProps = {
   onReturn: () => void
-  onGameOver?: (score: number) => void // gui diem so khi game over
+  onGameOver?: (score: number) => void // gui diem so khi game ket thuc
+  onLeaderboard?: () => void // chuyen den bang xep hang
+  onLogin?: () => void // chuyen den trang dang nhap
 }
 
-export default function TetrisGame({ onReturn, onGameOver }: TetrisGameProps) { 
+export default function TetrisGame({ onReturn, onGameOver, onLeaderboard, onLogin }: TetrisGameProps) { 
   const [board, setBoard] = useState(createEmptyBoard())
   const [currentPiece, setCurrentPiece] = useState(getRandomTetrimino())
   const [nextPiece, setNextPiece] = useState(getRandomTetrimino())
@@ -58,8 +60,9 @@ export default function TetrisGame({ onReturn, onGameOver }: TetrisGameProps) {
   const [lines, setLines] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
 
+  const canvasRef = useRef<HTMLCanvasElement>(null)
   const lineClearSoundRef = useRef<HTMLAudioElement | null>(null)
-  const dropIntervalRef = useRef<NodeJS.Timeout | null>(null) // Thoi gian giua cac lan roi
+  const dropIntervalRef = useRef<NodeJS.Timeout | null>(null) // thoi gian giua cac lan roi
 
   useEffect(() => { // am thanh xoa dong
     lineClearSoundRef.current = new Audio(LINE_CLEAR_SOUND_URL)
@@ -188,7 +191,7 @@ export default function TetrisGame({ onReturn, onGameOver }: TetrisGameProps) {
   }, [moveHorizontal, moveDown, tryRotate, hardDrop, gameOver])
 
   const restartGame = useCallback(() => { // Khoi dong lai game
-    setBoard(createEmptyBoard()) // Tao bang moi
+    setBoard(createEmptyBoard()) // tao bang moi
     setCurrentPiece(getRandomTetrimino()) // Khoi moi ngau nhien
     setNextPiece(getRandomTetrimino()) // Khoi tiep theo ngau nhien
     setPosition({ ...initialPosition }) // Dat lai vi tri khoi
@@ -208,8 +211,8 @@ export default function TetrisGame({ onReturn, onGameOver }: TetrisGameProps) {
     return () => { if (dropIntervalRef.current) clearInterval(dropIntervalRef.current) }
   }, [level, moveDown, gameOver, isPaused])
 
-  useEffect(() => { //pop up game over
-    if (gameOver && typeof onGameOver === "function") {
+  useEffect(() => { // pop up game ket thuc
+    if (gameOver && onGameOver) {
       onGameOver(score)
     }
   }, [gameOver, score, onGameOver])
@@ -217,28 +220,46 @@ export default function TetrisGame({ onReturn, onGameOver }: TetrisGameProps) {
   return (
     <div className="w-full min-h-screen flex flex-col items-center justify-center py-8">
       {gameOver ? (
-        <GameOverScreen score={score} onRestart={restartGame} onMainMenu={onReturn} />
+        <GameOverScreen score={score} onRestart={restartGame} onMainMenu={onReturn} onLeaderboard={onLeaderboard} onLogin={onLogin} />
       ) : (
         <div className="flex flex-col md:flex-row items-start justify-center gap-6">
-          {/*Bang game*/}
-          <div className="relative w-fit h-fit border-4 border-black bg-black">
-            <div className="grid grid-cols-10 grid-rows-20">
-              {board.map((row, y) =>
-                row.map((cell, x) => (
-                  <div
-                    key={`cell-${y}-${x}`}
-                    className="border"
-                    style={{
-                      borderColor: "#444",
-                      width: BLOCK_SIZE,
-                      height: BLOCK_SIZE,
-                      backgroundColor: typeof cell === "object" && cell !== null && "color" in cell ? cell.color : "transparent",
-                    }}
-                  />
-                )),
-              )}
+          {/* bang game */}
+          <div className="bg-black border-4 border-white shadow-2xl">
+            <canvas
+              ref={canvasRef}
+              width={BOARD_WIDTH * BLOCK_SIZE}
+              height={BOARD_HEIGHT * BLOCK_SIZE}
+              className="block"
+            />
+            <div className="p-4">
+              <div className="grid grid-cols-4 gap-2 mb-4">
+                <div 
+                  className="text-white text-xs font-mono text-center p-2 border border-gray-500 bg-gray-800"
+                  style={{ fontFamily: "'Press Start 2P', monospace" }}
+                >
+                  ⬇ Soft Drop
+                </div>
+                <div 
+                  className="text-white text-xs font-mono text-center p-2 border border-gray-500 bg-gray-800"
+                  style={{ fontFamily: "'Press Start 2P', monospace" }}
+                >
+                  ⬆ Rotate
+                </div>
+                <div 
+                  className="text-white text-xs font-mono text-center p-2 border border-gray-500 bg-gray-800"
+                  style={{ fontFamily: "'Press Start 2P', monospace" }}
+                >
+                  SPACE Hard Drop
+                </div>
+                <div 
+                  className="text-white text-xs font-mono text-center p-2 border border-gray-500 bg-gray-800"
+                  style={{ fontFamily: "'Press Start 2P', monospace" }}
+                >
+                  P Pause
+                </div>
+              </div>
             </div>
-            {/*Khoi*/}
+            {/* cac khoi */}
             {currentPiece.shape.map((row: any[], y: number) =>
               row.map((cell, x) => {
                 const bx = position.x + x
@@ -266,7 +287,7 @@ export default function TetrisGame({ onReturn, onGameOver }: TetrisGameProps) {
               </div>
             )}
           </div>
-          {/*bang thong tin*/}
+          {/* bang thong tin */}
           <div className="flex flex-col items-center gap-4">
             <div className="bg-black p-4 border-4 border-black w-48">
               <div className="text-center mb-4">
@@ -299,7 +320,7 @@ export default function TetrisGame({ onReturn, onGameOver }: TetrisGameProps) {
                   </div>
                 </div>
               </div>
-              {/*Bang diem*/}
+              {/* bang diem */}
               <div className="space-y-4">
                 <div className="bg-black p-3">
                   <h3 className="font-bold uppercase tracking-wide text-white mb-1 text-xs" style={{ fontFamily: "'Press Start 2P', monospace" }}>
@@ -321,7 +342,7 @@ export default function TetrisGame({ onReturn, onGameOver }: TetrisGameProps) {
                 </div>
               </div>
             </div>
-            {/*Nut*/}
+            {/* cac nut */}
             <div className="space-y-3 w-48">
               <button onClick={() => setIsPaused((p) => !p)} className="w-full py-3 bg-blue-400 text-white font-bold border-4 border-black">
                 {isPaused ? "RESUME" : "PAUSE"}
