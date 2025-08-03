@@ -8,22 +8,25 @@ import TetrisBackground from "@/components/tetris-background"
 import TetorisButton from "@/components/tetris-button"
 import { useAuth } from "@/lib/hooks/useAuth"
 
+// TRANG CHU - MENU CHINH CUA GAME
 export default function Home() {
-  const router = useRouter()
-  const [showMenu, setShowMenu] = useState(false)
-  const { user, logout, isLoading } = useAuth()
+  const router = useRouter() // dieu huong trang
+  const [showMenu, setShowMenu] = useState(false) // hien thi menu
+  const { user, logout, isLoading } = useAuth() // thong tin nguoi dung
 
-  // Hiển thị menu sau 1 giây
+  // HIEN THI MENU SAU 1 GIAY CHO ANIMATION
   useEffect(() => {
     const timer = setTimeout(() => setShowMenu(true), 1000)
     return () => clearTimeout(timer)
   }, [])
 
+  // BAT DAU CHOI GAME
   const startGame = () => {
-    // Cho phép chơi game ngay lập tức, không cần đăng nhập
+    // cho phep choi ngay khong can dang nhap
     router.push('/game')
   }
 
+  // MO TRANG CAI DAT
   const openSettings = () => {
     router.push('/settings')
   }
@@ -43,12 +46,14 @@ export default function Home() {
     router.push('/login')
   }
 
+  // GIAO DIEN TRANG CHU
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black">
-      {/* Login section */}
+      {/* PHAN DANG NHAP/DANG XUAT O GOC TREN PHAI */}
       {showMenu && !isLoading && (
         <div className="absolute top-6 right-6 z-50">
           {user ? (
+            // HIEN THI THONG TIN NGUOI DUNG VA NUT DANG XUAT
             <motion.div 
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -66,17 +71,21 @@ export default function Home() {
               </button>
             </motion.div>
           ) : (
-            <motion.button
+            // NUT DANG NHAP CHO NGUOI CHUA DANG NHAP
+            <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              onClick={openLogin}
-              className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-300 hover:to-yellow-400 border-3 border-black px-4 py-2 font-bold text-sm transition-all rounded-lg shadow-lg"
-              style={{ fontFamily: "'Press Start 2P', monospace" }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
             >
-              🔑 LOGIN
-            </motion.button>
+              <motion.button
+                onClick={openLogin}
+                className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-300 hover:to-yellow-400 border-3 border-black px-4 py-2 font-bold text-sm transition-all rounded-lg shadow-lg"
+                style={{ fontFamily: "'Press Start 2P', monospace" }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                🔑 LOGIN
+              </motion.button>
+            </motion.div>
           )}
         </div>
       )}

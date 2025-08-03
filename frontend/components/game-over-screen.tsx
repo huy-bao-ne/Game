@@ -6,27 +6,29 @@ import { useLeaderboard } from "@/lib/hooks/useLeaderboard"
 import { useAuth } from "@/lib/hooks/useAuth"
 import HighScoreInput from "./high-score-input"
 
-interface GameOverScreenProps { // cac props
-  score: number
-  onRestart: () => void // khoi dong lai
-  onMainMenu: () => void // menu chinh
-  onLeaderboard?: () => void // xem bang xep hang
-  onLogin?: () => void // chuyen den trang dang nhap
+// KIEU DU LIEU CHO PROPS CUA COMPONENT
+interface GameOverScreenProps { 
+  score: number // diem so cuoi game
+  onRestart: () => void // ham khoi dong lai game
+  onMainMenu: () => void // ham ve menu chinh
+  onLeaderboard?: () => void // ham xem bang xep hang
+  onLogin?: () => void // ham chuyen den trang dang nhap
 }
 
-// popup ket thuc game
+// COMPONENT MAN HINH GAME OVER
 export default function GameOverScreen({ score, onRestart, onMainMenu, onLeaderboard, onLogin }: GameOverScreenProps) {
-  const { isTopScore, addScore, leaderboard } = useLeaderboard()
-  const { user, isLoading } = useAuth()
-  const [showHighScoreInput, setShowHighScoreInput] = useState(false)
-  const [newRank, setNewRank] = useState<number | null>(null)
-  const [hasCheckedScore, setHasCheckedScore] = useState(false)
+  const { isTopScore, addScore, leaderboard } = useLeaderboard() // hook xu ly bang xep hang
+  const { user, isLoading } = useAuth() // hook xu ly dang nhap
+  const [showHighScoreInput, setShowHighScoreInput] = useState(false) // hien thi form nhap ten
+  const [newRank, setNewRank] = useState<number | null>(null) // thu hang moi dat duoc
+  const [hasCheckedScore, setHasCheckedScore] = useState(false) // da kiem tra diem chua
 
+  // KIEM TRA DIEM CO THUOC TOP KHONG
   useEffect(() => {
     // cho auth loading xong truoc khi kiem tra
     if (!hasCheckedScore && !isLoading) {
       const isHighScore = isTopScore(score)
-      console.log('Score check:', { score, isHighScore, user: user?.name })
+      console.log('Kiem tra diem:', { score, isHighScore, user: user?.name })
       
       if (isHighScore) {
         // neu user da dang nhap, tu dong luu diem voi ten cua ho
@@ -167,9 +169,9 @@ export default function GameOverScreen({ score, onRestart, onMainMenu, onLeaderb
               {leaderboard.slice(0, 3).map((entry, index) => {
                 const isCurrentPlayer = user && entry.name === user.name
                 const rankColors = [
-                  "from-yellow-400 to-yellow-500", // Gold
-                  "from-gray-300 to-gray-400",     // Silver  
-                  "from-amber-600 to-amber-700"    // Bronze
+                  "from-yellow-400 to-yellow-500", // vang - vi tri nhat
+                  "from-gray-300 to-gray-400",     // bac - vi tri nhi  
+                  "from-amber-600 to-amber-700"    // dong - vi tri ba
                 ]
                 const rankNumbers = ["1ST", "2ND", "3RD"]
                 
